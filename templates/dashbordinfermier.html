@@ -1,0 +1,49 @@
+
+<!DOCTYPE html>
+<html>
+    
+
+	<head>
+		<title>Chatbot</title>
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" /> 
+       
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+		
+    </head>
+  
+   
+    <div class="dashboard-patient-page-container bg-gray-100">
+        <div class="left-side-container">
+          
+          {% include 'sidebare.html' %}
+          <main>
+              {% block content %}{% endblock %}
+          </main>
+        
+        </div>
+        <div class="right-side-container bg-gray-100">
+            <h1>Dashboard</h1>
+            <div id="chart_div"></div>
+            <div id="money_chart_div"></div>
+            <!-- JavaScript to render Plotly chart -->
+            <script>
+                // Parse the chart JSON data
+                var chartData = JSON.parse('{{ chart_json | safe }}');
+        
+                // Render the Plotly chart
+                Plotly.newPlot('chart_div', chartData.data, chartData.layout);
+                      // Parse the chart JSON data for money made chart
+                var moneyChartData = JSON.parse('{{ money_chart_json | safe }}');
+
+// Render the Plotly money made chart
+               Plotly.newPlot('money_chart_div', moneyChartData.data, moneyChartData.layout);
+            </script>
+        </div>
+    </div>
+
+  
+    
+    
+</html>

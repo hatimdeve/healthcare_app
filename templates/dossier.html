@@ -1,0 +1,739 @@
+
+<!DOCTYPE html>
+<html>
+    
+
+	<head>
+		<title>Chatbot</title>
+
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" /> 
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main1.css') }}">
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>DataTables </title>
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel=" stylesheet">
+	<!--Replace with your tailwind.css once created-->
+
+
+	<!--Regular Datatables CSS-->
+	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+	<!--Responsive Extension Datatables CSS-->
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+	<style>
+		/*Overrides for Tailwind CSS */
+
+		/*Form fields*/
+		.dataTables_wrapper select,
+		.dataTables_wrapper .dataTables_filter input {
+			color: #4a5568;
+			/*text-gray-700*/
+			padding-left: 1rem;
+			/*pl-4*/
+			padding-right: 1rem;
+			/*pl-4*/
+			padding-top: .5rem;
+			/*pl-2*/
+			padding-bottom: .5rem;
+			/*pl-2*/
+			line-height: 1.25;
+			/*leading-tight*/
+			border-width: 2px;
+			/*border-2*/
+			border-radius: .25rem;
+			border-color: #edf2f7;
+			/*border-gray-200*/
+			background-color: #edf2f7;
+			/*bg-gray-200*/
+		}
+
+		/*Row Hover*/
+		table.dataTable.hover tbody tr:hover,
+		table.dataTable.display tbody tr:hover {
+			background-color: #ebf4ff;
+			/*bg-indigo-100*/
+		}
+
+		/*Pagination Buttons*/
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			font-weight: 700;
+			/*font-bold*/
+			border-radius: .25rem;
+			/*rounded*/
+			border: 1px solid transparent;
+			/*border border-transparent*/
+		}
+
+		/*Pagination Buttons - Current selected */
+		.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+			color: #fff !important;
+			/*text-white*/
+			box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+			/*shadow*/
+			font-weight: 700;
+			/*font-bold*/
+			border-radius: .25rem;
+			/*rounded*/
+			background: #667eea !important;
+			/*bg-indigo-500*/
+			border: 1px solid transparent;
+			/*border border-transparent*/
+		}
+
+		/*Pagination Buttons - Hover */
+		.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+			color: #fff !important;
+			/*text-white*/
+			box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+			/*shadow*/
+			font-weight: 700;
+			/*font-bold*/
+			border-radius: .25rem;
+			/*rounded*/
+			background: #667eea !important;
+			/*bg-indigo-500*/
+			border: 1px solid transparent;
+			/*border border-transparent*/
+		}
+
+		/*Add padding to bottom border */
+		table.dataTable.no-footer {
+			border-bottom: 1px solid #e2e8f0;
+			/*border-b-1 border-gray-300*/
+			margin-top: 0.75em;
+			margin-bottom: 0.75em;
+		}
+
+		/*Change colour of responsive icon*/
+		table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child:before,
+		table.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child:before {
+			background-color: #667eea !important;
+			/*bg-indigo-500*/
+		}
+	</style>
+
+		
+    </head>
+  
+   
+    <div class="dashboard-patient-page-container bg-gray-100">
+        <div class="left-side-container">
+          
+          {% include 'sidebare.html' %}
+          <main>
+              {% block content %}{% endblock %}
+          </main>
+        
+        </div>
+        <div class="right-side-container bg-gray-100">
+            <div class="container container-dossier w-full md:w-4/5 xl:w-3/5  mx-auto px-2">
+				{% if user=='patient' %}
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Ajouter dossier
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Ajouter Dossier</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="add_dossier" method="post" action="/add_dossier">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="infirmierSelect" class="form-label">Infirmier Disponible</label>
+                        <select class="form-select" id="infirmierSelect" name="infirmier_id">
+                            <!-- Populate with available nurses -->
+                            <!-- Example: <option value="1">Nurse 1</option> -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="soinSelect" class="form-label">Soin</label>
+                        <select class="form-select" id="soinSelect" name="soin_id">
+                            <!-- Populate with available treatments -->
+                            <!-- Example: <option value="1">Treatment 1</option> -->
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
+                        <textarea class="form-control" id="commentairePatientInput" name="commentaire_patient"></textarea>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+                
+        
+        
+                <!--Card-->
+                <div id='recipients' class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
+        
+        
+                    <table id="example" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                        <thead>
+                            <tr>
+                                <th data-priority="1">patient</th>
+                                <th data-priority="2">infermier</th>
+                                <th data-priority="3">soin</th>
+                                <th data-priority="4">commentaire</th>
+                                <th data-priority="5">status</th>
+								<th data-priority="6">Actions</th>
+                                
+                            </tr>
+                        </thead>
+						<tbody >
+							{% for dossier in dossiers %}
+							<tr>
+								<td>{{ dossier.patient.nom }} {{ dossier.patient.prenom }}</td>
+								<td>{{ dossier.infirmier.nom }} {{ dossier.infirmier.prenom }}</td>
+								<td>{{ dossier.soin.nom_s }}</td>
+								<td>{{ dossier.commentaire_patient }}</td>
+								<td>{{ dossier.status }}</td>
+								{% if user=='infirmier' and dossier.status=='fait_par_patient'%}
+								<td>
+									
+									<!-- Add a trigger button for the Dossier Details modal -->
+				<!-- Button to update status -->
+									<!-- Add a trigger button for the Dossier Details modal -->
+									<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
+										<i class="fas fa-eye"></i>
+									</button>
+							
+									<!-- Include the modal content for this dossier -->
+<div class="modal fade" id="dossierDetailsModal{{ dossier.idd }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal content -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Dossier Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Populate the modal body with dossier details -->
+				<div class="mb-3">
+                    <label for="infirmierSelect" class="form-label">Patient</label>
+                    <input type="text" class="form-control" value="{{ dossier.patient.nom }} {{ dossier.patient.prenom }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="soinSelect" class="form-label">Soin</label>
+                    <input type="text" class="form-control" value="{{ dossier.soin.nom_s }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="prixSoinInput" class="form-label">Prix du Soin</label>
+                    <input type="text" class="form-control" value="{{ dossier.soin.prix }} dh" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
+                    <textarea class="form-control" readonly>{{ dossier.commentaire_patient }}</textarea>
+                </div>
+                <!-- Add more fields for other dossier information -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+									<a href="{{ url_for('update_status',dossier_id=dossier.idd) }}"><button class="btn btn-primary" >accept patient</button></a>
+								</td>
+								{% elif user == 'infirmier' and dossier.status == 'payer_par_client' %}
+								<td>
+									<!-- Add a trigger button for the Dossier Details modal -->
+				<!-- Button to update status -->
+									<!-- Add a trigger button for the Dossier Details modal -->
+									<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
+										<i class="fas fa-eye"></i>
+									</button>
+							
+									<!-- Include the modal content for this dossier -->
+<div class="modal fade" id="dossierDetailsModal{{ dossier.idd }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal content -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Dossier Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Populate the modal body with dossier details -->
+				<div class="mb-3">
+                    <label for="infirmierSelect" class="form-label">Patient</label>
+                    <input type="text" class="form-control" value="{{ dossier.patient.nom }} {{ dossier.patient.prenom }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="soinSelect" class="form-label">Soin</label>
+                    <input type="text" class="form-control" value="{{ dossier.soin.nom_s }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="prixSoinInput" class="form-label">Prix du Soin</label>
+                    <input type="text" class="form-control" value="{{ dossier.soin.prix }} dh" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
+                    <textarea class="form-control" readonly>{{ dossier.commentaire_patient }}</textarea>
+                </div>
+                <!-- Add more fields for other dossier information -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+									<!-- Button to update status -->
+									<a href="{{ url_for('finaliser_soin',dossier_id=dossier.idd) }}"><button class="btn btn-primary" >finaliser soin</button></a>
+                                    
+								</td>
+								{% elif user == 'infirmier' and dossier.status == 'accecpt_par_infermier' %}
+								<td>
+									<!-- Button to update status -->
+				<!-- Button to update status -->
+									<!-- Add a trigger button for the Dossier Details modal -->
+									<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
+										<i class="fas fa-eye"></i>
+									</button>
+							
+									<!-- Include the modal content for this dossier -->
+<div class="modal fade" id="dossierDetailsModal{{ dossier.idd }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal content -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Dossier Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Populate the modal body with dossier details -->
+				<div class="mb-3">
+                    <label for="infirmierSelect" class="form-label">Patient</label>
+                    <input type="text" class="form-control" value="{{ dossier.patient.nom }} {{ dossier.patient.prenom }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="soinSelect" class="form-label">Soin</label>
+                    <input type="text" class="form-control" value="{{ dossier.soin.nom_s }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="prixSoinInput" class="form-label">Prix du Soin</label>
+                    <input type="text" class="form-control" value="{{ dossier.soin.prix }} dh" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
+                    <textarea class="form-control" readonly>{{ dossier.commentaire_patient }}</textarea>
+                </div>
+                <!-- Add more fields for other dossier information -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+									
+								</td>
+								{% endif %}
+								{% if user=='patient' and  dossier.status=='accecpt_par_infermier'%}
+								<td>
+									<!-- Add a trigger button for the Dossier Details modal -->
+				<!-- Button to update status -->
+									<!-- Add a trigger button for the Dossier Details modal -->
+									<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
+										<i class="fas fa-eye"></i>
+									</button>
+							
+									<!-- Include the modal content for this dossier -->
+<div class="modal fade" id="dossierDetailsModal{{ dossier.idd }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal content -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Dossier Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Populate the modal body with dossier details -->
+                <div class="mb-3">
+                    <label for="infirmierSelect" class="form-label">Infirmier</label>
+                    <input type="text" class="form-control" value="{{ dossier.infirmier.nom }} {{ dossier.infirmier.prenom }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="soinSelect" class="form-label">Soin</label>
+                    <input type="text" class="form-control" value="{{ dossier.soin.nom_s }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="prixSoinInput" class="form-label">Prix du Soin</label>
+                    <input type="text" class="form-control" value="{{ dossier.soin.prix }} dh" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
+                    <textarea class="form-control" readonly>{{ dossier.commentaire_patient }}</textarea>
+                </div>
+                <!-- Add more fields for other dossier information -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+								
+<!-- Add a trigger button for the Dossier Details modal -->
+<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#dossierupdateModal{{ dossier.idd }}">
+    <i class="fas fa-edit"></i>
+</button>
+
+<!-- Include the modal content for this dossier -->
+<div class="modal fade" id="dossierupdateModal{{ dossier.idd }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal content -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Update Dossier Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('update_dossier', dossier_id=dossier.idd) }}">
+
+                <div class="modal-body">
+                    <!-- Populate the modal body with dossier details -->
+                   
+                    <div class="mb-3">
+                        <label for="infirmierSelectt" class="form-label">Infirmier</label>
+                        <select class="form-selectt" id="infirmierSelectt" name="infirmier_id" >
+							{% for nurse in available_nurses %}
+							<option value="{{nurse.idi}}">{{ nurse.nom }}{{ nurse.prenom }}</option>
+							{% endfor %}
+						</select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="soinSelectt" class="form-label">Soin</label>
+						<select class="form-selectt" id="soinSelectt" name="soin_id" >
+							{% for soin in soin %}
+							<option value="{{soin.ids}}">{{ soin.nom_s }}</option>
+							{% endfor %}
+						</select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
+                        <textarea class="form-control" id="commentairePatientInput" name="commentaire_patient">{{ dossier.commentaire_patient }}</textarea>
+                    </div>
+                    <!-- Add more fields for other dossier information -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+                                <!-- Icon for deleting -->
+                                <button type="button" class="btn btn-danger"><a href="{{ url_for('delete_dossier', dossier_id=dossier.idd) }}">
+                                    <i class="fas fa-trash"></i></button>
+									<!-- Button to update status -->
+									
+                                    <a href="{{ url_for('payer',dossier_id=dossier.idd) }}"><button class="btn btn-primary" >payer</button></a>
+								<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModall{{dossier.idd}}">
+    make payment
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModall{{dossier.idd}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Payment</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form  method="POST" action="{{ url_for('payer',dossier_id=dossier.idd) }}">
+        <div class="modal-body">
+            <main class="page payment-page">
+                <section class="payment-form dark">
+                  <div class="container">
+                    <div class="block-heading">
+                      <h2>Payment</h2>
+                     
+                    </div>
+                    
+                      <div class="products">
+                        <h3 class="title">Checkout</h3>
+                        <div class="item">
+                          
+                          <p class="item-name">{{dossier.soin.nom_s}}</p>
+                          <p class="item-description">Lorem ipsum dolor sit amet</p>
+                        </div>
+                       
+                        <div class="total">Total<span class="price">{{dossier.soin.prix}}dh</span></div>
+                      </div>
+                      <div class="card-details">
+                        <h3 class="title">Credit Card Details</h3>
+                        <div class="row">
+                          <div class="form-group col-sm-7">
+                            <label for="card-holder">Card Holder</label>
+                            <input id="card-holder" type="text" class="form-control" placeholder="Card Holder" aria-label="Card Holder" aria-describedby="basic-addon1" value="{{ dossier.patient.nom }} {{ dossier.patient.prenom }}" readonly>
+                          </div>
+                          <div class="form-group col-sm-5">
+                            <label for="">Expiration Date</label>
+                            <div class="input-group expiration-date">
+                              <input type="text" class="form-control" placeholder="MM" aria-label="MM" aria-describedby="basic-addon1">
+                              <span class="date-separator">/</span>
+                              <input type="text" class="form-control" placeholder="YY" aria-label="YY" aria-describedby="basic-addon1">
+                            </div>
+                          </div>
+                          <div class="form-group col-sm-8">
+                            <label for="card-number">Card Number</label>
+                            <input id="card-number" type="text" class="form-control" placeholder="Card Number" aria-label="Card Holder" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="form-group col-sm-4">
+                            <label for="cvc">CVC</label>
+                            <input id="cvc" type="text" class="form-control" placeholder="CVC" aria-label="Card Holder" aria-describedby="basic-addon1">
+                          </div>
+                          
+                        </div>
+                      </div>
+                    
+                  </div>
+                </section>
+              </main>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">paye</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
+                                </td>
+								{% endif %}
+								{%  if user=='patient' and dossier.status=='dossier_traiter' or user=='patient' and dossier.status=='fait_par_patient' or user=='patient' and  dossier.status=='payer_par_client' %}
+								<td>
+
+									<!-- Add a trigger button for the Dossier Details modal -->
+				<!-- Button to update status -->
+									<!-- Add a trigger button for the Dossier Details modal -->
+									<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
+										<i class="fas fa-eye"></i>
+									</button>
+							
+									<!-- Include the modal content for this dossier -->
+<div class="modal fade" id="dossierDetailsModal{{ dossier.idd }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal content -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Dossier Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Populate the modal body with dossier details -->
+                <div class="mb-3">
+                    <label for="infirmierSelect" class="form-label">Infirmier</label>
+                    <input type="text" class="form-control" value="{{ dossier.infirmier.nom }} {{ dossier.infirmier.prenom }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="soinSelect" class="form-label">Soin</label>
+                    <input type="text" class="form-control" value="{{ dossier.soin.nom_s }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="prixSoinInput" class="form-label">Prix du Soin</label>
+                    <input type="text" class="form-control" value="{{ dossier.soin.prix }} dh" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
+                    <textarea class="form-control" readonly>{{ dossier.commentaire_patient }}</textarea>
+                </div>
+                <!-- Add more fields for other dossier information -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+									<!-- Add a trigger button for the Dossier Details modal -->
+<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#dossierupdateModal{{ dossier.idd }}">
+    <i class="fas fa-edit"></i>
+</button>
+
+<!-- Include the modal content for this dossier -->
+<div class="modal fade" id="dossierupdateModal{{ dossier.idd }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal content -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Update Dossier Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('update_dossier', dossier_id=dossier.idd) }}">
+                <div class="modal-body">
+                    <!-- Populate the modal body with dossier details -->
+                    <div class="mb-3">
+						<label for="infirmierSelectt" class="form-label">Infirmier</label>
+                        <select class="form-selectt" id="infirmierSelectt" name="infirmier_id" >
+							{% for nurse in available_nurses %}
+							<option value="{{nurse.idi}}">{{ nurse.nom }}{{ nurse.prenom }}</option>
+							{% endfor %}
+						</select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="soinSelectt" class="form-label">Soin</label>
+                        <select class="form-selectt" id="soinSelectt" name="soin_id">
+							{% for soin in soin %}
+							<option value="{{soin.ids}}">{{ soin.nom_s }}</option>
+							{% endfor %}
+						</select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
+                        <textarea class="form-control" id="commentairePatientInput" name="commentaire_patient">{{ dossier.commentaire_patient }}</textarea>
+                    </div>
+                    <!-- Add more fields for other dossier information -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+                               <!-- Icon for deleting -->
+                               <button type="button" class="btn btn-danger"><a href="{{ url_for('delete_dossier', dossier_id=dossier.idd) }}">
+                              <i class="fas fa-trash"></i></button>
+                              </a>
+								</td>
+								{% endif %}
+								{%  if user == 'infirmier' and  dossier.status=='dossier_traiter'%}
+								<td>
+
+									<!-- Button to update status -->
+									<!-- Add a trigger button for the Dossier Details modal -->
+									<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
+										<i class="fas fa-eye"></i>
+									</button>
+							
+									<!-- Include the modal content for this dossier -->
+<div class="modal fade" id="dossierDetailsModal{{ dossier.idd }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal content -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Dossier Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Populate the modal body with dossier details -->
+                <div class="mb-3">
+                    <label for="infirmierSelect" class="form-label">Patient</label>
+                    <input type="text" class="form-control" value="{{ dossier.patient.nom }} {{ dossier.patient.prenom }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="soinSelect" class="form-label">Soin</label>
+                    <input type="text" class="form-control" value="{{ dossier.soin.nom_s }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="prixSoinInput" class="form-label">Prix du Soin</label>
+                    <input type="text" class="form-control" value="{{ dossier.soin.prix }} dh" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
+                    <textarea class="form-control" readonly>{{ dossier.commentaire_patient }}</textarea>
+                </div>
+                <!-- Add more fields for other dossier information -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+								</td>
+								{% endif %}
+							</tr>
+						
+							{% endfor %}
+						</tbody>
+        
+                    </table>
+        <!-- Modal -->
+
+        
+                </div>
+                <!--/Card-->
+        
+        
+            </div>
+        </div>
+    </div>
+
+  
+    	<!-- jQuery -->
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+	<!--Datatables -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+	<script>
+		$(document).ready(function() {
+
+			var table = $('#example').DataTable({
+					responsive: true
+				})
+				.columns.adjust()
+				.responsive.recalc();
+		});
+	</script>
+<script>
+    
+	fetch('/get_available_nurses')
+    .then(response => response.json())
+    .then(data => {
+        const infirmierSelect = document.getElementById('infirmierSelect');
+        data.nurses.forEach(nurse => {
+            const option = document.createElement('option');
+            option.value = nurse.id;
+            option.textContent = `${nurse.nom} ${nurse.prenom}`;
+            infirmierSelect.appendChild(option);
+        });
+    });
+
+	fetch('/get_available_treatments')
+    .then(response => response.json())
+    .then(data => {
+        const soinSelect = document.getElementById('soinSelect');
+        data.treatments.forEach(treatment => {
+            const option = document.createElement('option');
+            option.value = treatment.id;
+            option.textContent = treatment.nom_s;
+            soinSelect.appendChild(option);
+        });
+    });
+
+	
+	
+
+
+</script>
+    
+</html>

@@ -1,0 +1,156 @@
+
+<div class="min-h-screen flex flex-row bg-gray-100">
+    <div class="flex flex-col w-56 bg-white rounded-r-3xl overflow-hidden">
+      <div class="flex items-center justify-center h-20 shadow-md">
+        <h1 class="text-3xl uppercase text-indigo-500">Logo</h1>
+      </div>
+      <ul class="flex flex-col py-4">
+        <li>
+          <a href="{{ url_for('dashboard') }}" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+            <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400"><i class="bx bx-home"></i></span>
+            <span class="text-sm font-medium">Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('dossier') }}" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+            <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400"><i class="bx bx-music"></i></span>
+            <span class="text-sm font-medium">Dossiers</span>
+          </a>
+        </li>
+       
+        <li>
+          <a href="{{ url_for('profile') }}" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+            <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400"><i class="bx bx-user"></i></span>
+            <span class="text-sm font-medium">Profile</span>
+          </a>
+        </li>
+        {% if user=='patient' %}
+        <li>
+          <a href="#" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800" id="notificationIcon">
+              <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400"><i class="bx bx-bell"></i></span>
+              <span class="text-sm font-medium">Notifications</span>
+              <span class="ml-auto mr-6 text-sm bg-red-100 rounded-full px-3 py-px text-red-500" id="notificationCount">{{ notifcountpatient}}</span>
+          </a>
+      </li>
+        
+          <div id="notificationList" style="display: none;">
+            <ul>
+                {% for notification in notifications_data_patient %}
+                    <li>{{ notification.content }}</li>
+                {% endfor %}
+            </ul>
+      </div>
+      {% endif %}
+      {% if user=='infirmier' %}
+      <li>
+        <a href="#" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800" id="notificationIcon">
+            <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400"><i class="bx bx-bell"></i></span>
+            <span class="text-sm font-medium">Notifications</span>
+            <span class="ml-auto mr-6 text-sm bg-red-100 rounded-full px-3 py-px text-red-500" id="notificationCount">{{ notifcountinfermier }}</span>
+        </a>
+    </li>
+      
+        <div id="notificationList" style="display: none;">
+          <ul>
+              {% for notification in notifications_data_infermier %}
+                  <li>{{ notification.content }}</li>
+              {% endfor %}
+          </ul>
+      </div>
+    {% endif %}
+        <li>
+          <a href="{{ url_for('logout') }}"class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+            <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400"><i class="bx bx-log-out"></i></span>
+            <span class="text-sm font-medium">Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <script>
+document.getElementById('notificationIcon').addEventListener('click', function() {
+    const notificationList = document.getElementById('notificationList');
+    if (notificationList.style.display === 'block') {
+        notificationList.style.display = 'none';
+    } else {
+        let url = '';
+        {% if user == 'patient' %}
+            url = '/get_notifications_patients';
+            fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const notificationItems = data.map(notification => `
+                    <li class="notification-item" data-notification-id="${notification.idnp}">
+                        ${notification.content}
+                        <span class="dismiss-button" data-notification-id="${notification.idnp}"><i class="bx bx-trash"></i></span>
+                    </li>
+                `);
+                notificationList.innerHTML = `<ul>${notificationItems.join('')}</ul>`;
+                notificationList.style.display = 'block';
+              
+                // Add event listener for dismiss buttons
+                document.querySelectorAll('.dismiss-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const notificationId = this.getAttribute('data-notification-id');
+                        fetch(`/dismiss_notification/${notificationId}`, { method: 'DELETE' })
+                            .then(response => {
+                                if (response.ok) {
+                                    // Remove the dismissed notification from the list
+                                    this.parentElement.remove();
+                                } else {
+                                    console.error('Failed to dismiss notification:', response.statusText);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error dismissing notification:', error);
+                            });
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching notifications:', error);
+            });
+        {% endif %}
+        {% if user == 'infirmier' %}
+            url = '/get_notifications_infermiers';
+            fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const notificationItems = data.map(notification => `
+                    <li class="notification-item" data-notification-id="${notification.idni}">
+                        ${notification.content}
+                        <span class="dismiss-button" data-notification-id="${notification.idni}"><i class="bx bx-trash"></i></span>
+                    </li>
+                `);
+                notificationList.innerHTML = `<ul>${notificationItems.join('')}</ul>`;
+                notificationList.style.display = 'block';
+              
+                // Add event listener for dismiss buttons
+                document.querySelectorAll('.dismiss-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const notificationId = this.getAttribute('data-notification-id');
+                        fetch(`/dismiss_notification_inf/${notificationId}`, { method: 'DELETE' })
+                            .then(response => {
+                                if (response.ok) {
+                                    // Remove the dismissed notification from the list
+                                    this.parentElement.remove();
+                                } else {
+                                    console.error('Failed to dismiss notification:', response.statusText);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error dismissing notification:', error);
+                            });
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching notifications:', error);
+            });
+        {% endif %}
+    }
+});
+
+
+  </script>
+  
