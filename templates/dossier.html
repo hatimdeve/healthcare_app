@@ -233,6 +233,10 @@
                     <input type="text" class="form-control" value="{{ dossier.patient.nom }} {{ dossier.patient.prenom }}" readonly>
                 </div>
                 <div class="mb-3">
+                    <label for="infirmierSelect" class="form-label">Patient_phone</label>
+                    <input type="text" class="form-control" value="{{ dossier.patient.phone_number }}" readonly>
+                </div>
+                <div class="mb-3">
                     <label for="soinSelect" class="form-label">Soin</label>
                     <input type="text" class="form-control" value="{{ dossier.soin.nom_s }}" readonly>
                 </div>
@@ -277,6 +281,10 @@
 				<div class="mb-3">
                     <label for="infirmierSelect" class="form-label">Patient</label>
                     <input type="text" class="form-control" value="{{ dossier.patient.nom }} {{ dossier.patient.prenom }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="infirmierSelect" class="form-label">Patient_phone</label>
+                    <input type="text" class="form-control" value="{{ dossier.patient.phone_number }} " readonly>
                 </div>
                 <div class="mb-3">
                     <label for="soinSelect" class="form-label">Soin</label>
@@ -327,6 +335,10 @@
                     <input type="text" class="form-control" value="{{ dossier.patient.nom }} {{ dossier.patient.prenom }}" readonly>
                 </div>
                 <div class="mb-3">
+                    <label for="infirmierSelect" class="form-label">Patient_phone</label>
+                    <input type="text" class="form-control" value="{{ dossier.patient.phone_number }} " readonly>
+                </div>
+                <div class="mb-3">
                     <label for="soinSelect" class="form-label">Soin</label>
                     <input type="text" class="form-control" value="{{ dossier.soin.nom_s }}" readonly>
                 </div>
@@ -374,6 +386,10 @@
                     <input type="text" class="form-control" value="{{ dossier.infirmier.nom }} {{ dossier.infirmier.prenom }}" readonly>
                 </div>
                 <div class="mb-3">
+                    <label for="infirmierSelect" class="form-label">Infirmier_phone</label>
+                    <input type="text" class="form-control" value="{{ dossier.infirmier.phone_number }} " readonly>
+                </div>
+                <div class="mb-3">
                     <label for="soinSelect" class="form-label">Soin</label>
                     <input type="text" class="form-control" value="{{ dossier.soin.nom_s }}" readonly>
                 </div>
@@ -405,7 +421,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Update Dossier Details</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Update Dossier</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="POST" action="{{ url_for('update_dossier', dossier_id=dossier.idd) }}">
@@ -447,9 +463,10 @@
                                 <!-- Icon for deleting -->
                                 <button type="button" class="btn btn-danger"><a href="{{ url_for('delete_dossier', dossier_id=dossier.idd) }}">
                                     <i class="fas fa-trash"></i></button>
+                                    </a>
 									<!-- Button to update status -->
 									
-                                    <a href="{{ url_for('payer',dossier_id=dossier.idd) }}"><button class="btn btn-primary" >payer</button></a>
+                                    <!-- <a href="{{ url_for('payer',dossier_id=dossier.idd) }}"><button class="btn btn-primary" >payer</button></a> -->
 								<!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModall{{dossier.idd}}">
     make payment
@@ -478,7 +495,7 @@
                         <div class="item">
                           
                           <p class="item-name">{{dossier.soin.nom_s}}</p>
-                          <p class="item-description">Lorem ipsum dolor sit amet</p>
+                          
                         </div>
                        
                         <div class="total">Total<span class="price">{{dossier.soin.prix}}dh</span></div>
@@ -550,6 +567,10 @@
                     <input type="text" class="form-control" value="{{ dossier.infirmier.nom }} {{ dossier.infirmier.prenom }}" readonly>
                 </div>
                 <div class="mb-3">
+                    <label for="infirmierSelect" class="form-label">Infirmier_phone</label>
+                    <input type="text" class="form-control" value="{{ dossier.infirmier.phone_number }} " readonly>
+                </div>
+                <div class="mb-3">
                     <label for="soinSelect" class="form-label">Soin</label>
                     <input type="text" class="form-control" value="{{ dossier.soin.nom_s }}" readonly>
                 </div>
@@ -580,7 +601,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Update Dossier Details</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Update Dossier</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="POST" action="{{ url_for('update_dossier', dossier_id=dossier.idd) }}">
@@ -647,6 +668,10 @@
                 <div class="mb-3">
                     <label for="infirmierSelect" class="form-label">Patient</label>
                     <input type="text" class="form-control" value="{{ dossier.patient.nom }} {{ dossier.patient.prenom }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="infirmierSelect" class="form-label">Patient_phone</label>
+                    <input type="text" class="form-control" value="{{ dossier.patient.phone_number }} " readonly>
                 </div>
                 <div class="mb-3">
                     <label for="soinSelect" class="form-label">Soin</label>

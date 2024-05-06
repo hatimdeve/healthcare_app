@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine, Column, Integer, CheckConstraint
+from sqlalchemy import create_engine, Column, Integer, CheckConstraint,JSON
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import logout_user, current_user, login_required,LoginManager,login_user,UserMixin
 db = SQLAlchemy()
@@ -12,7 +12,8 @@ class Patient(UserMixin,db.Model):
     email = db.Column(db.String)
     adresse = db.Column(db.String)
     mdp = db.Column(db.String)
-    atc = db.Column(db.String)
+    phone_number = db.Column(db.String) 
+    atc = db.Column(db.JSON)
     # Define the one-to-many relationship to Dossier
     dossiers = db.relationship("Dossier", back_populates="patient")
     notificationpatients = db.relationship("Notificationpatient", back_populates="patient")
@@ -31,6 +32,7 @@ class Infirmier(UserMixin,db.Model):
     prenom = db.Column(db.String)
     email = db.Column(db.String)
     mdp = db.Column(db.String)
+    phone_number = db.Column(db.String) 
     isdipo = db.Column(db.Boolean, default=True) 
     # Define the one-to-many relationship to Dossier
     dossiers = db.relationship("Dossier", back_populates="infirmier")

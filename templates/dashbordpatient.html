@@ -9,8 +9,19 @@
         <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" /> 
        
         <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-        
-		
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
+		<style>
+                section {
+            padding: 20px;
+            margin: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        </style>
     </head>
   
    
@@ -24,11 +35,29 @@
         
         </div>
         <div class="right-side-container bg-gray-100">
-            <h1>lhwa dwa</h1>
+            <section>
+            <h1>to continuo please Fill ATC</h1>
+            <form method="POST" action="{{ url_for('add_atc', user_id=userr) }}">
+                <label for="atc">Choose ATC:</label><br>
+                <select class="selectpicker" name="atc" multiple data-live-search="true">
+                    <option value="hypertension">hypertension</option>
+                    <option value="diabète">diabète</option>
+                    <option value="maladie cardiaque">maladie cardiaque</option>
+                    <option value="Allergie pénicilline">Allergie pénicilline</option>
+                    <option value="Sous insuline">Sous insuline</option>
+                    <option value="Sous chimiothérapie">Sous chimiothérapie</option>
+                    <option value="appendicectomie">appendicectomie </option>
+                    <option value="pontage coronarien">pontage coronarien</option>
+                    <option value="réparation de la hanche">réparation de la hanche </option>
+                    <!-- Add more options as needed -->
+                </select>
+                <input type="submit" value="Submit">
+            </form>
+        </section>
         </div>
     </div>
 
   
-    
+
     
 </html>

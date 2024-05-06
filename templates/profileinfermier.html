@@ -74,7 +74,10 @@
                         <label for="commentairePatientInput" class="form-label">prenom</label>
                         <input type="text" class="form-control" name="prenom" value="{{ userr.prenom }}" >
                     </div>
-                    
+                    <div class="mb-3">
+                        <label for="commentairePatientInput" class="form-label">phone_number</label>
+                        <input type="text" class="form-control" name="phone_number" value="{{ userr.phone_number }}" >
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -106,6 +109,14 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <p>{{ userr.email }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label>phone_number</label>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p>{{ userr.phone_number }}</p>
                                                 </div>
                                             </div>
                                             <div class="row">

@@ -13,7 +13,11 @@
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-		
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
     </head>
   
    
@@ -79,8 +83,28 @@
                         <input type="text" class="form-control" name="adresse" value="{{ userr.adresse}}" >
                     </div>
                     <div class="mb-3">
-                        <label for="commentairePatientInput" class="form-label">atc</label>
-                        <input type="text" class="form-control" name="atc" value="{{userr.atc }}" >
+                        <label for="commentairePatientInput" class="form-label">phone_number</label>
+                        <input type="text" class="form-control" name="phone_number" value="{{userr.phone_number }}" >
+                    </div>
+                    <div class="mb-3">
+                        <label for="commentairePatientInput" class="form-label">ATC</label>
+                        <input id="atcInput" type="text" class="form-control"  value="{{userr.atc }}" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="atcSelect" class="form-label">Select ATC</label><br>
+                        <select class="selectpicker" name="atc" multiple data-live-search="true">
+                            <option value="hypertension">hypertension</option>
+                            <option value="diabète">diabète</option>
+                            <option value="maladie cardiaque">maladie cardiaque</option>
+                            <option value="Allergie pénicilline">Allergie pénicilline</option>
+                            <option value="Sous insuline">Sous insuline</option>
+                            <option value="Sous chimiothérapie">Sous chimiothérapie</option>
+                            <option value="appendicectomie">appendicectomie </option>
+                            <option value="pontage coronarien">pontage coronarien</option>
+                            <option value="réparation de la hanche">réparation de la hanche </option>
+                            <!-- Add more options as needed -->
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -130,6 +154,14 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <p>{{ userr.atc }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label>phone_number</label>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p>{{ userr.phone_number }}</p>
                                                 </div>
                                             </div>
                                 </div>

@@ -51,18 +51,30 @@ with app.app_context():
             if column.foreign_keys:
                 for fk in column.foreign_keys:
                     print(f"  - Foreign Key: {fk.column} ({fk.column.type}) -> {fk.column.table}")
-    soin1 = Soin(nom_s='Consultation', prix=50)
-    soin2 = Soin(nom_s='Radiographie', prix=100)
-    soin3 = Soin(nom_s='Analyse sanguine', prix=80)
+    existing_soins = Soin.query.all()
 
-    # Add instances to the session
-    db.session.add(soin1)
-    db.session.add(soin2)
-    db.session.add(soin3)
+    if not existing_soins:  # If no existing records are found, insert the data
+       # Create new Soin instances
+       soin1 = Soin(nom_s='Administration de médicaments', prix=50)
+       soin2 = Soin(nom_s='Soins des plaies', prix=100)
+       soin3 = Soin(nom_s='Surveillance des signes vitaux', prix=80)
+       soin4 = Soin(nom_s='Soins de stomie', prix=90)
+       soin5 = Soin(nom_s='Soins injections', prix=110)
+       soin6 = Soin(nom_s='Soins de cathéter', prix=3000)
+       soin7 = Soin(nom_s='Soins de trachéotomie', prix=2000)
+       soin8 = Soin(nom_s='Soins de plaies chroniques', prix=800)
+       soin9 = Soin(nom_s='Soins de nutrition entérale', prix=40)
+       soin10 = Soin(nom_s='Éducation et conseil', prix=220)
+    
+      # Add the new instances to the session and commit
+       db.session.add_all([soin1,soin2,soin3,soin4,soin5,soin6,soin7,soin8,soin9,soin10])
+       db.session.commit()
 
-    # Commit the session to persist the changes
-    db.session.commit()
+       print("Soin records inserted successfully.")
+    else:
+       print("Soin records already exist in the database.")
 
+   
 print("Values inserted into the 'soins' table successfully.")
 @app.route('/')
 def index():
@@ -86,7 +98,7 @@ def login():
             user=get_user_type(current_user.get_id())
             notifications_content = Notificationpatient.query.filter_by(idp=current_user.get_id()).all()
             notifcountpatient=len(notifications_content)
-            return render_template('dashbordpatient.html',user=user,notificationpatient=notificationpatient,notifcountpatient=notifcountpatient)
+            return render_template('dashbordpatient.html',user=user,userr=current_user.get_id(),notificationpatient=notificationpatient,notifcountpatient=notifcountpatient)
         if infermier and check_password_hash(infermier.mdp, password):
             login_user(infermier)  # Log in the user
             user=get_user_type(current_user.get_id())
@@ -108,12 +120,12 @@ def register_infermier():
         nom=request.form['nom']
         prenom=request.form['prenom']
         email = request.form['email']
-        
+        phone_number = request.form['phone_number']
         
         password = generate_password_hash(request.form['password'], method='pbkdf2:sha256')
         
 
-        new_infermier = Infirmier(idi=nombre,nom=nom,prenom=prenom,email=email, mdp=password)
+        new_infermier = Infirmier(idi=nombre,nom=nom,prenom=prenom,phone_number=phone_number,email=email, mdp=password)
         print(InfermierDao.register_infermier(new_infermier))
         
 
@@ -134,11 +146,11 @@ def register_patient():
         prenom=request.form['prenom']
         email = request.form['email']
         adresse=request.form['adresse']
-        atc=request.form['atc']
+        phone_number=request.form['phone_number']
         password = generate_password_hash(request.form['password'], method='pbkdf2:sha256')
         
 
-        new_patient = Patient(idp=nombre,nom=nom,prenom=prenom,email=email,adresse=adresse, mdp=password,atc=atc)
+        new_patient = Patient(idp=nombre,nom=nom,prenom=prenom,email=email,adresse=adresse, mdp=password,phone_number=phone_number)
         print(PatientDao.register_patient(new_patient))
         
 
@@ -153,10 +165,7 @@ def dashboard():
             user=get_user_type(current_user.get_id())
             notifications_content = Notificationpatient.query.filter_by(idp=current_user.get_id()).all()
             notifcountpatient=len(notifications_content)
-            
-
-    
-            return render_template('dashbordpatient.html',user=user,notificationpatient=notificationpatient,notifcountpatient=notifcountpatient)
+            return render_template('dashbordpatient.html',user=user,userr=current_user.get_id(),notificationpatient=notificationpatient,notifcountpatient=notifcountpatient)
     elif get_user_type(current_user.get_id())=='infirmier':
             user=get_user_type(current_user.get_id())
             notifications_content = Notificationinfermier.query.filter_by(idf=current_user.get_id()).all()
@@ -375,11 +384,13 @@ def update_patient(user_id):
     nom=request.form['nom']
     prenom=request.form['prenom']
     adresse=request.form['adresse']
-    atc=request.form['atc']
+    phone_number=request.form['phone_number']
+    atc=request.form.getlist('atc')
     dossier = Patient.query.get(user_id)
     dossier.nom=nom
     dossier.prenom=prenom
     dossier.adresse=adresse
+    dossier.phone_number=phone_number
     dossier.atc=atc    
      # Commit the changes to the database
     db.session.commit()
@@ -422,16 +433,34 @@ def update_dossier(dossier_id):
 
     return redirect(url_for('dossier'))
 
-
+@app.route('/add_atc/<int:user_id>', methods=['POST'])
+def add_atc(user_id):
+    if request.method == 'POST':
+        # Retrieve the selected ATC values from the form
+        atc_values = request.form.getlist('atc')
+        print(atc_values)
+        # Now you have the selected ATC values, you can process them further
+        # For example, you can store them in your database or perform any other action
+        patient=Patient.query.get(user_id)
+        # Here, we are just printing the selected values for demonstration purposes
+        # Assign the selected ATC values to the atc column
+        patient.atc = atc_values
+        # Add the new patient to the database session
+        # Commit the session to save changes to the database
+        db.session.commit()
+        # You can redirect to another page or render a template as per your requirement
+        return redirect(url_for('dashboard'))
+    
 @app.route('/update_infermier/<int:user_id>', methods=['POST'])
 @login_required
 def update_infermier(user_id):
     nom=request.form['nom']
     prenom=request.form['prenom']
-   
+    phone_number=request.form['phone_number']
     dossier = Infirmier.query.get(user_id)
     dossier.nom=nom
     dossier.prenom=prenom
+    dossier.phone_number=phone_number
      
      # Commit the changes to the database
     db.session.commit()
