@@ -134,52 +134,7 @@
         </div>
         <div class="right-side-container bg-gray-100">
             <div class="container container-dossier w-full md:w-4/5 xl:w-3/5  mx-auto px-2">
-				{% if user=='patient' %}
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Ajouter dossier
-</button>
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Ajouter Dossier</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="add_dossier" method="post" action="/add_dossier">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="infirmierSelect" class="form-label">Infirmier Disponible</label>
-                        <select class="form-select" id="infirmierSelect" name="infirmier_id">
-                            <!-- Populate with available nurses -->
-                            <!-- Example: <option value="1">Nurse 1</option> -->
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="soinSelect" class="form-label">Soin</label>
-                        <select class="form-select" id="soinSelect" name="soin_id">
-                            <!-- Populate with available treatments -->
-                            <!-- Example: <option value="1">Treatment 1</option> -->
-                        </select>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
-                        <textarea class="form-control" id="commentairePatientInput" name="commentaire_patient"></textarea>
-                    </div>
-                    
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                    <button type="submit" class="btn btn-primary">Enregistrer</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-{% endif %}
                 
         
         
@@ -193,7 +148,7 @@
                                 <th data-priority="1">patient</th>
                                 <th data-priority="2">infermier</th>
                                 <th data-priority="3">soin</th>
-                                <th data-priority="4">commentaire</th>
+                                <th data-priority="4">notes_de_medcin</th>
                                 <th data-priority="5">status</th>
 								<th data-priority="6">Actions</th>
                                 
@@ -205,15 +160,11 @@
 								<td>{{ dossier.patient.nom }} {{ dossier.patient.prenom }}</td>
 								<td>{{ dossier.infirmier.nom }} {{ dossier.infirmier.prenom }}</td>
 								<td>{{ dossier.soin.nom_s }}</td>
-								<td>{{ dossier.commentaire_patient }}</td>
+								<td>{{ dossier.notes_de_medcin }}</td>
 								<td>{{ dossier.status }}</td>
-								{% if user=='infirmier' and dossier.status=='fait_par_patient'%}
+								{% if user=='infirmier' and dossier.status=='traiter_par_medcin'%}
 								<td>
-									
-									<!-- Add a trigger button for the Dossier Details modal -->
-				<!-- Button to update status -->
-									<!-- Add a trigger button for the Dossier Details modal -->
-									<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
 										<i class="fas fa-eye"></i>
 									</button>
 							
@@ -228,13 +179,13 @@
             </div>
             <div class="modal-body">
                 <!-- Populate the modal body with dossier details -->
-				<div class="mb-3">
+                <div class="mb-3">
                     <label for="infirmierSelect" class="form-label">Patient</label>
                     <input type="text" class="form-control" value="{{ dossier.patient.nom }} {{ dossier.patient.prenom }}" readonly>
                 </div>
                 <div class="mb-3">
-                    <label for="infirmierSelect" class="form-label">Patient_phone</label>
-                    <input type="text" class="form-control" value="{{ dossier.patient.phone_number }}" readonly>
+                    <label for="infirmierSelect" class="form-label">Infirmier_phone</label>
+                    <input type="text" class="form-control" value="{{ dossier.infirmier.phone_number }} " readonly>
                 </div>
                 <div class="mb-3">
                     <label for="soinSelect" class="form-label">Soin</label>
@@ -245,8 +196,13 @@
                     <input type="text" class="form-control" value="{{ dossier.soin.prix }} dh" readonly>
                 </div>
                 <div class="mb-3">
-                    <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
-                    <textarea class="form-control" readonly>{{ dossier.commentaire_patient }}</textarea>
+                    <label for="commentairePatientInput" class="form-label">notes_de_medcin</label>
+                    <textarea class="form-control" readonly>{{ dossier.notes_de_medcin }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="commentairePatientInput" class="form-label">examin</label>
+                    <img src="data:image/png;base64, {{ dossier.examin_base64 }}" alt="Image">
+
                 </div>
                 <!-- Add more fields for other dossier information -->
             </div>
@@ -256,14 +212,12 @@
         </div>
     </div>
 </div>
-									<a href="{{ url_for('update_status',dossier_id=dossier.idd) }}"><button class="btn btn-primary" >accept patient</button></a>
+									
 								</td>
 								{% elif user == 'infirmier' and dossier.status == 'payer_par_client' %}
 								<td>
 									<!-- Add a trigger button for the Dossier Details modal -->
-				<!-- Button to update status -->
-									<!-- Add a trigger button for the Dossier Details modal -->
-									<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
 										<i class="fas fa-eye"></i>
 									</button>
 							
@@ -278,13 +232,13 @@
             </div>
             <div class="modal-body">
                 <!-- Populate the modal body with dossier details -->
-				<div class="mb-3">
+                <div class="mb-3">
                     <label for="infirmierSelect" class="form-label">Patient</label>
                     <input type="text" class="form-control" value="{{ dossier.patient.nom }} {{ dossier.patient.prenom }}" readonly>
                 </div>
                 <div class="mb-3">
-                    <label for="infirmierSelect" class="form-label">Patient_phone</label>
-                    <input type="text" class="form-control" value="{{ dossier.patient.phone_number }} " readonly>
+                    <label for="infirmierSelect" class="form-label">Infirmier_phone</label>
+                    <input type="text" class="form-control" value="{{ dossier.infirmier.phone_number }} " readonly>
                 </div>
                 <div class="mb-3">
                     <label for="soinSelect" class="form-label">Soin</label>
@@ -295,8 +249,13 @@
                     <input type="text" class="form-control" value="{{ dossier.soin.prix }} dh" readonly>
                 </div>
                 <div class="mb-3">
-                    <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
-                    <textarea class="form-control" readonly>{{ dossier.commentaire_patient }}</textarea>
+                    <label for="commentairePatientInput" class="form-label">notes_de_medcin</label>
+                    <textarea class="form-control" readonly>{{ dossier.notes_de_medcin }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="commentairePatientInput" class="form-label">examin</label>
+                    <img src="data:image/png;base64, {{ dossier.examin_base64 }}" alt="Image">
+
                 </div>
                 <!-- Add more fields for other dossier information -->
             </div>
@@ -310,12 +269,10 @@
 									<a href="{{ url_for('finaliser_soin',dossier_id=dossier.idd) }}"><button class="btn btn-primary" >finaliser soin</button></a>
                                     
 								</td>
-								{% elif user == 'infirmier' and dossier.status == 'accecpt_par_infermier' %}
+								{% elif user == 'infirmier' and dossier.status == 'dossier_traiter' %}
 								<td>
-									<!-- Button to update status -->
-				<!-- Button to update status -->
-									<!-- Add a trigger button for the Dossier Details modal -->
-									<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
+								
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
 										<i class="fas fa-eye"></i>
 									</button>
 							
@@ -330,13 +287,13 @@
             </div>
             <div class="modal-body">
                 <!-- Populate the modal body with dossier details -->
-				<div class="mb-3">
+                <div class="mb-3">
                     <label for="infirmierSelect" class="form-label">Patient</label>
                     <input type="text" class="form-control" value="{{ dossier.patient.nom }} {{ dossier.patient.prenom }}" readonly>
                 </div>
                 <div class="mb-3">
-                    <label for="infirmierSelect" class="form-label">Patient_phone</label>
-                    <input type="text" class="form-control" value="{{ dossier.patient.phone_number }} " readonly>
+                    <label for="infirmierSelect" class="form-label">Infirmier_phone</label>
+                    <input type="text" class="form-control" value="{{ dossier.infirmier.phone_number }} " readonly>
                 </div>
                 <div class="mb-3">
                     <label for="soinSelect" class="form-label">Soin</label>
@@ -347,8 +304,13 @@
                     <input type="text" class="form-control" value="{{ dossier.soin.prix }} dh" readonly>
                 </div>
                 <div class="mb-3">
-                    <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
-                    <textarea class="form-control" readonly>{{ dossier.commentaire_patient }}</textarea>
+                    <label for="commentairePatientInput" class="form-label">notes_de_medcin</label>
+                    <textarea class="form-control" readonly>{{ dossier.notes_de_medcin }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="commentairePatientInput" class="form-label">examin</label>
+                    <img src="data:image/png;base64, {{ dossier.examin_base64 }}" alt="Image">
+
                 </div>
                 <!-- Add more fields for other dossier information -->
             </div>
@@ -361,7 +323,7 @@
 									
 								</td>
 								{% endif %}
-								{% if user=='patient' and  dossier.status=='accecpt_par_infermier'%}
+								{% if user=='patient' and  dossier.status=='traiter_par_medcin'%}
 								<td>
 									<!-- Add a trigger button for the Dossier Details modal -->
 				<!-- Button to update status -->
@@ -398,8 +360,13 @@
                     <input type="text" class="form-control" value="{{ dossier.soin.prix }} dh" readonly>
                 </div>
                 <div class="mb-3">
-                    <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
-                    <textarea class="form-control" readonly>{{ dossier.commentaire_patient }}</textarea>
+                    <label for="commentairePatientInput" class="form-label">notes_de_medcin</label>
+                    <textarea class="form-control" readonly>{{ dossier.notes_de_medcin }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="commentairePatientInput" class="form-label">examin</label>
+                    <img src="data:image/png;base64, {{ dossier.examin_base64 }}" alt="Image">
+
                 </div>
                 <!-- Add more fields for other dossier information -->
             </div>
@@ -410,64 +377,7 @@
     </div>
 </div>
 								
-<!-- Add a trigger button for the Dossier Details modal -->
-<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#dossierupdateModal{{ dossier.idd }}">
-    <i class="fas fa-edit"></i>
-</button>
 
-<!-- Include the modal content for this dossier -->
-<div class="modal fade" id="dossierupdateModal{{ dossier.idd }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <!-- Modal content -->
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Update Dossier</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="POST" action="{{ url_for('update_dossier', dossier_id=dossier.idd) }}">
-
-                <div class="modal-body">
-                    <!-- Populate the modal body with dossier details -->
-                   
-                    <div class="mb-3">
-                        <label for="infirmierSelectt" class="form-label">Infirmier</label>
-                        <select class="form-selectt" id="infirmierSelectt" name="infirmier_id" >
-							{% for nurse in available_nurses %}
-							<option value="{{nurse.idi}}">{{ nurse.nom }}{{ nurse.prenom }}</option>
-							{% endfor %}
-						</select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="soinSelectt" class="form-label">Soin</label>
-						<select class="form-selectt" id="soinSelectt" name="soin_id" >
-							{% for soin in soin %}
-							<option value="{{soin.ids}}">{{ soin.nom_s }}</option>
-							{% endfor %}
-						</select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
-                        <textarea class="form-control" id="commentairePatientInput" name="commentaire_patient">{{ dossier.commentaire_patient }}</textarea>
-                    </div>
-                    <!-- Add more fields for other dossier information -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-                                <!-- Icon for deleting -->
-                                <button type="button" class="btn btn-danger"><a href="{{ url_for('delete_dossier', dossier_id=dossier.idd) }}">
-                                    <i class="fas fa-trash"></i></button>
-                                    </a>
-									<!-- Button to update status -->
-									
-                                    <!-- <a href="{{ url_for('payer',dossier_id=dossier.idd) }}"><button class="btn btn-primary" >payer</button></a> -->
-								<!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModall{{dossier.idd}}">
     make payment
   </button>
@@ -541,10 +451,10 @@
   </div>
                                 </td>
 								{% endif %}
-								{%  if user=='patient' and dossier.status=='dossier_traiter' or user=='patient' and dossier.status=='fait_par_patient' or user=='patient' and  dossier.status=='payer_par_client' %}
+								{%  if  user=='patient' and  dossier.status=='payer_par_client' or user=='patient' and  dossier.status=='dossier_traiter' %}
 								<td>
 
-									<!-- Add a trigger button for the Dossier Details modal -->
+										<!-- Add a trigger button for the Dossier Details modal -->
 				<!-- Button to update status -->
 									<!-- Add a trigger button for the Dossier Details modal -->
 									<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
@@ -579,8 +489,13 @@
                     <input type="text" class="form-control" value="{{ dossier.soin.prix }} dh" readonly>
                 </div>
                 <div class="mb-3">
-                    <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
-                    <textarea class="form-control" readonly>{{ dossier.commentaire_patient }}</textarea>
+                    <label for="commentairePatientInput" class="form-label">notes_de_medcin</label>
+                    <textarea class="form-control" readonly>{{ dossier.notes_de_medcin }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="commentairePatientInput" class="form-label">examin</label>
+                    <img src="data:image/png;base64, {{ dossier.examin_base64 }}" alt="Image">
+
                 </div>
                 <!-- Add more fields for other dossier information -->
             </div>
@@ -590,65 +505,15 @@
         </div>
     </div>
 </div>
-									<!-- Add a trigger button for the Dossier Details modal -->
-<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#dossierupdateModal{{ dossier.idd }}">
-    <i class="fas fa-edit"></i>
-</button>
+									
 
-<!-- Include the modal content for this dossier -->
-<div class="modal fade" id="dossierupdateModal{{ dossier.idd }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <!-- Modal content -->
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Update Dossier</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="POST" action="{{ url_for('update_dossier', dossier_id=dossier.idd) }}">
-                <div class="modal-body">
-                    <!-- Populate the modal body with dossier details -->
-                    <div class="mb-3">
-						<label for="infirmierSelectt" class="form-label">Infirmier</label>
-                        <select class="form-selectt" id="infirmierSelectt" name="infirmier_id" >
-							{% for nurse in available_nurses %}
-							<option value="{{nurse.idi}}">{{ nurse.nom }}{{ nurse.prenom }}</option>
-							{% endfor %}
-						</select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="soinSelectt" class="form-label">Soin</label>
-                        <select class="form-selectt" id="soinSelectt" name="soin_id">
-							{% for soin in soin %}
-							<option value="{{soin.ids}}">{{ soin.nom_s }}</option>
-							{% endfor %}
-						</select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
-                        <textarea class="form-control" id="commentairePatientInput" name="commentaire_patient">{{ dossier.commentaire_patient }}</textarea>
-                    </div>
-                    <!-- Add more fields for other dossier information -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-                               <!-- Icon for deleting -->
-                               <button type="button" class="btn btn-danger"><a href="{{ url_for('delete_dossier', dossier_id=dossier.idd) }}">
-                              <i class="fas fa-trash"></i></button>
-                              </a>
 								</td>
 								{% endif %}
-								{%  if user == 'infirmier' and  dossier.status=='dossier_traiter'%}
+                                {%  if  user=='medecin'  %}
 								<td>
 
-									<!-- Button to update status -->
+										<!-- Add a trigger button for the Dossier Details modal -->
+				<!-- Button to update status -->
 									<!-- Add a trigger button for the Dossier Details modal -->
 									<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dossierDetailsModal{{ dossier.idd }}">
 										<i class="fas fa-eye"></i>
@@ -666,12 +531,16 @@
             <div class="modal-body">
                 <!-- Populate the modal body with dossier details -->
                 <div class="mb-3">
+                    <label for="infirmierSelect" class="form-label">Infirmier</label>
+                    <input type="text" class="form-control" value="{{ dossier.infirmier.nom }} {{ dossier.infirmier.prenom }}" readonly>
+                </div>
+                <div class="mb-3">
                     <label for="infirmierSelect" class="form-label">Patient</label>
                     <input type="text" class="form-control" value="{{ dossier.patient.nom }} {{ dossier.patient.prenom }}" readonly>
                 </div>
                 <div class="mb-3">
-                    <label for="infirmierSelect" class="form-label">Patient_phone</label>
-                    <input type="text" class="form-control" value="{{ dossier.patient.phone_number }} " readonly>
+                    <label for="infirmierSelect" class="form-label">Infirmier_phone</label>
+                    <input type="text" class="form-control" value="{{ dossier.infirmier.phone_number }} " readonly>
                 </div>
                 <div class="mb-3">
                     <label for="soinSelect" class="form-label">Soin</label>
@@ -682,8 +551,13 @@
                     <input type="text" class="form-control" value="{{ dossier.soin.prix }} dh" readonly>
                 </div>
                 <div class="mb-3">
-                    <label for="commentairePatientInput" class="form-label">Commentaire Patient</label>
-                    <textarea class="form-control" readonly>{{ dossier.commentaire_patient }}</textarea>
+                    <label for="commentairePatientInput" class="form-label">notes_de_medcin</label>
+                    <textarea class="form-control" readonly>{{ dossier.notes_de_medcin }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="commentairePatientInput" class="form-label">examin</label>
+                    <img src="data:image/png;base64, {{ dossier.examin_base64 }}" alt="Image">
+
                 </div>
                 <!-- Add more fields for other dossier information -->
             </div>
@@ -693,8 +567,73 @@
         </div>
     </div>
 </div>
+<!-- Add a trigger button for the Dossier Details modal -->
+<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#dossierupdateModal{{ dossier.idd }}">
+    <i class="fas fa-edit"></i>
+</button>
+
+<!-- Include the modal content for this dossier -->
+<div class="modal fade" id="dossierupdateModal{{ dossier.idd }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal content -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Update Dossier</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('update_dossier', dossier_id=dossier.idd) }}" enctype="multipart/form-data">
+
+                <div class="modal-body">
+                    <!-- Populate the modal body with dossier details -->
+                    <div class="mb-3">
+                    <label for="prixSoinInput" class="form-label">infermier</label>
+                    <input type="text" class="form-control" value="{{ dossier.infirmier.nom }} {{ dossier.infirmier.prenom }}" readonly>
+                        <input type="hidden" name="preveuis_inf" value="{{dossier.infirmier.idi}}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="infirmierSelectt" class="form-label">Infirmier</label>
+                        <select class="form-selectt" id="infirmierSelectt" name="infirmier_id">
+                            <option value="">Select Infirmier</option> <!-- Empty option with placeholder text -->
+                            {% for nurse in available_nurses %}
+                                <option value="{{ nurse.idi }}">{{ nurse.nom }} {{ nurse.prenom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="soinSelectt" class="form-label">Soin</label>
+						<select class="form-selectt" id="soinSelectt" name="soin_id" >
+							{% for soin in soin %}
+							<option value="{{soin.ids}}">{{ soin.nom_s }}</option>
+							{% endfor %}
+						</select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="commentairePatientInput" class="form-label">Notes de Medcin</label>
+                        <textarea class="form-control" name="notes_de_medcin">{{ dossier.notes_de_medcin }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="commentairePatientInput" class="form-label">Examin</label>
+                        <input type="file" class="form-control" name="examin_file">
+                        <img src="data:image/png;base64, {{ dossier.examin_base64 }}" alt="Image">
+                    </div>
+                    <!-- Add more fields for other dossier information -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<button type="button" class="btn btn-danger"><a href="{{ url_for('delete_dossier', dossier_id=dossier.idd) }}">
+    <i class="fas fa-trash"></i></button>
+    </a>							
+
 								</td>
 								{% endif %}
+								
 							</tr>
 						
 							{% endfor %}

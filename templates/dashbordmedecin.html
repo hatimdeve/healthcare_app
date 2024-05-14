@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<html>
+    
+
+<head>
+    <title>Chatbot</title>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" /> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main1.css') }}">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>DataTables </title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel=" stylesheet">
+<!--Replace with your tailwind.css once created-->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
+
+<!--Regular Datatables CSS-->
+<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+<!--Responsive Extension Datatables CSS-->
+<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<style>
+    /*Overrides for Tailwind CSS */
+
+    /*Form fields*/
+    .dataTables_wrapper select,
+    .dataTables_wrapper .dataTables_filter input {
+        color: #4a5568;
+        /*text-gray-700*/
+        padding-left: 1rem;
+        /*pl-4*/
+        padding-right: 1rem;
+        /*pl-4*/
+        padding-top: .5rem;
+        /*pl-2*/
+        padding-bottom: .5rem;
+        /*pl-2*/
+        line-height: 1.25;
+        /*leading-tight*/
+        border-width: 2px;
+        /*border-2*/
+        border-radius: .25rem;
+        border-color: #edf2f7;
+        /*border-gray-200*/
+        background-color: #edf2f7;
+        /*bg-gray-200*/
+    }
+
+    /*Row Hover*/
+    table.dataTable.hover tbody tr:hover,
+    table.dataTable.display tbody tr:hover {
+        background-color: #ebf4ff;
+        /*bg-indigo-100*/
+    }
+
+    /*Pagination Buttons*/
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        font-weight: 700;
+        /*font-bold*/
+        border-radius: .25rem;
+        /*rounded*/
+        border: 1px solid transparent;
+        /*border border-transparent*/
+    }
+
+    /*Pagination Buttons - Current selected */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        color: #fff !important;
+        /*text-white*/
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+        /*shadow*/
+        font-weight: 700;
+        /*font-bold*/
+        border-radius: .25rem;
+        /*rounded*/
+        background: #667eea !important;
+        /*bg-indigo-500*/
+        border: 1px solid transparent;
+        /*border border-transparent*/
+    }
+
+    /*Pagination Buttons - Hover */
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        color: #fff !important;
+        /*text-white*/
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+        /*shadow*/
+        font-weight: 700;
+        /*font-bold*/
+        border-radius: .25rem;
+        /*rounded*/
+        background: #667eea !important;
+        /*bg-indigo-500*/
+        border: 1px solid transparent;
+        /*border border-transparent*/
+    }
+
+    /*Add padding to bottom border */
+    table.dataTable.no-footer {
+        border-bottom: 1px solid #e2e8f0;
+        /*border-b-1 border-gray-300*/
+        margin-top: 0.75em;
+        margin-bottom: 0.75em;
+    }
+
+    /*Change colour of responsive icon*/
+    table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child:before,
+    table.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child:before {
+        background-color: #667eea !important;
+        /*bg-indigo-500*/
+    }
+</style>
+
+    
+</head>
+  
+   
+    <div class="dashboard-patient-page-container bg-gray-100">
+        <div class="left-side-container">
+          
+          {% include 'sidebare.html' %}
+          <main>
+              {% block content %}{% endblock %}
+          </main>
+        
+        </div>
+        <div class="right-side-container bg-gray-100">
+            <div class="container container-dossier w-full md:w-4/5 xl:w-3/5  mx-auto px-2">
+            <div id='recipients' class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
+        
+        
+                <table id="example" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+                    <thead>
+                        <tr>
+                            <th data-priority="1">patient</th>
+                            <th data-priority="2">soin</th>
+                            <th data-priority="2">demande</th>
+                            <th data-priority="5">status</th>
+                            <th data-priority="6">Actions</th>
+                            
+                            
+                        </tr>
+                    </thead>
+                    <tbody >
+                        {% for demande in demandes %}
+                        <tr>
+                            <td>{{ demande.patient.nom }} {{ demande.patient.prenom }}</td>
+                            <td>{{ demande.soin.nom_s }} </td>
+                            <td>{{ demande.content }} </td>
+                            <td>{{ demande.status}}</td>
+                            <td><!-- Button trigger modal -->
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{ demande.patient_id }}">
+                                    Ajouter dossier
+                                </button>
+                                
+                                <!-- Modal -->
+                                <div class="modal fade" id="exampleModal{{ demande.patient_id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">ajouter Dossier</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form method="POST" action="{{ url_for('add_dossier', patient_id=demande.patient_id,demande_id=demande.idde) }}" enctype="multipart/form-data">
+                                           
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="infirmierSelect" class="form-label">Infirmier Disponible</label>
+                                                        <select class="form-select" id="infirmierSelect" name="infirmier_id">
+                                                            <!-- Populate with available nurses -->
+                                                            <!-- Example: <option value="1">Nurse 1</option> -->
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="soinSelect" class="form-label">Soin</label>
+                                                        <input type="text" class="form-control"  value="{{ demande.soin.nom_s }}" readonly>
+                                                        <input type="hidden" name="soin_id" value="{{demande.ids}}">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="commentairePatientInput" class="form-label">notes_de_medcin </label>
+                                                        <textarea class="form-control" id="commentairePatientInput" name="notes_de_medcin"></textarea>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label for="commentairePatientInput" class="form-label">examin </label>
+                                                        <input type="file" name="examin" accept="image/*">
+                                                        <br><br>
+                                                                                                          </div>
+                                                                                                          <label for="atc">Choose ATC:</label><br>
+                                                                                                          <select class="selectpicker" name="atc" multiple data-live-search="true">
+                                                                                                              <option value="hypertension">hypertension</option>
+                                                                                                              <option value="diabète">diabète</option>
+                                                                                                              <option value="maladie cardiaque">maladie cardiaque</option>
+                                                                                                              <option value="Allergie pénicilline">Allergie pénicilline</option>
+                                                                                                              <option value="Sous insuline">Sous insuline</option>
+                                                                                                              <option value="Sous chimiothérapie">Sous chimiothérapie</option>
+                                                                                                              <option value="appendicectomie">appendicectomie </option>
+                                                                                                              <option value="pontage coronarien">pontage coronarien</option>
+                                                                                                              <option value="réparation de la hanche">réparation de la hanche </option>
+                                                                                                              <!-- Add more options as needed -->
+                                                                                                          </select>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-danger"><a href="{{ url_for('delete_demande', demande_id=demande.idde) }}">
+                                    <i class="fas fa-trash"></i></button>
+                                    </a>
+                                </td>
+                            {% endfor %}
+                    </tbody>
+                   
+                </table>
+    <!-- Modal -->
+
+    
+            </div>
+            
+        </div>
+    </div>
+    </div>
+  
+   <!-- jQuery -->
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+	<!--Datatables -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+	<script>
+		$(document).ready(function() {
+
+			var table = $('#example').DataTable({
+					responsive: true
+				})
+				.columns.adjust()
+				.responsive.recalc();
+		});
+
+        fetch('/get_available_nurses')
+    .then(response => response.json())
+    .then(data => {
+        const infirmierSelect = document.getElementById('infirmierSelect');
+        data.nurses.forEach(nurse => {
+            const option = document.createElement('option');
+            option.value = nurse.id;
+            option.textContent = `${nurse.nom} ${nurse.prenom}`;
+            infirmierSelect.appendChild(option);
+        });
+    });
+
+	fetch('/get_available_treatments')
+    .then(response => response.json())
+    .then(data => {
+        const soinSelect = document.getElementById('soinSelect');
+        data.treatments.forEach(treatment => {
+            const option = document.createElement('option');
+            option.value = treatment.id;
+            option.textContent = treatment.nom_s;
+            soinSelect.appendChild(option);
+        });
+    });
+	</script>
+    
+</html>

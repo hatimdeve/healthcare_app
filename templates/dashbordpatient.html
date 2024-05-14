@@ -35,29 +35,41 @@
         
         </div>
         <div class="right-side-container bg-gray-100">
-            <section>
-            <h1>to continuo please Fill ATC</h1>
-            <form method="POST" action="{{ url_for('add_atc', user_id=userr) }}">
-                <label for="atc">Choose ATC:</label><br>
-                <select class="selectpicker" name="atc" multiple data-live-search="true">
-                    <option value="hypertension">hypertension</option>
-                    <option value="diabète">diabète</option>
-                    <option value="maladie cardiaque">maladie cardiaque</option>
-                    <option value="Allergie pénicilline">Allergie pénicilline</option>
-                    <option value="Sous insuline">Sous insuline</option>
-                    <option value="Sous chimiothérapie">Sous chimiothérapie</option>
-                    <option value="appendicectomie">appendicectomie </option>
-                    <option value="pontage coronarien">pontage coronarien</option>
-                    <option value="réparation de la hanche">réparation de la hanche </option>
-                    <!-- Add more options as needed -->
-                </select>
-                <input type="submit" value="Submit">
-            </form>
-        </section>
+            <div class="container">
+                <h1>Demande de Soins</h1>
+                <form id="submit_demande" method="post" action="/submit_demande">
+            
+                    <div class="mb-3">
+                        <label for="soinSelect" class="form-label">Soin</label>
+                        <select class="form-select" id="soinSelect" name="soin_id">
+                            <!-- Populate with available treatments -->
+                            <!-- Example: <option value="1">Treatment 1</option> -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="content">Content:</label>
+                        <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+    
         </div>
     </div>
 
   
-
+<script>	
+fetch('/get_available_treatments')
+    .then(response => response.json())
+    .then(data => {
+        const soinSelect = document.getElementById('soinSelect');
+        data.treatments.forEach(treatment => {
+            const option = document.createElement('option');
+            option.value = treatment.id;
+            option.textContent = treatment.nom_s;
+            soinSelect.appendChild(option);
+        });
+    });
+    </script>
     
 </html>

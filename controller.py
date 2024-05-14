@@ -1,5 +1,5 @@
 from typing import List
-from models import Patient,Infirmier,db
+from models import Patient,Infirmier,db,Medecin
 import random
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -33,6 +33,29 @@ class InfermierDao:
     try:
         # Add the user to the session
         db.session.add(infermier)
+        # Commit the changes to the database
+        db.session.commit()
+        return "User registered successfully!"
+    except Exception as e:
+        # Rollback the transaction in case of any error
+        db.session.rollback()
+        return f"Error registering user: {e}"
+    finally:
+        # Close the session
+        db.session.close()
+
+
+
+class MedecinDao:
+
+ @staticmethod
+    
+ def register_Medecin(medecin: Medecin) -> str:
+
+    
+    try:
+        # Add the user to the session
+        db.session.add(medecin)
         # Commit the changes to the database
         db.session.commit()
         return "User registered successfully!"

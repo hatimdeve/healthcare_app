@@ -6,8 +6,8 @@ from flask import jsonify
 import plotly.graph_objs as go
 import random
 # Importing models
-from models import db,Patient,Infirmier,Soin,Dossier,Notificationpatient,Notificationinfermier
-from controller import PatientDao,InfermierDao
+from models import db,Patient,Infirmier,Soin,Dossier,Notificationpatient,Notificationinfermier,Medecin,Demande,Notificationmedecin
+from controller import PatientDao,InfermierDao,MedecinDao
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///healthcare.db'
@@ -22,6 +22,8 @@ notificationpatient={}
 notificationinfermier={}
 notifcountpatient=0
 notifcountinfermier=0
+notificationmedecin={}
+notifcountmedecin=0
 @login_manager.user_loader
 def load_user(user_id):
     # Check if the user_id corresponds to a Patient or an Infirmier
@@ -31,6 +33,9 @@ def load_user(user_id):
     infirmier = Infirmier.query.get(user_id)
     if infirmier:
         return infirmier
+    medecin = Medecin.query.get(user_id)
+    if medecin:
+        return medecin
     # If user_id does not correspond to any user, return None
     return None
 # Initialize db with app
@@ -93,39 +98,48 @@ def login():
         password = request.form['password']
         patient = Patient.query.filter_by(email=email).first()
         infermier = Infirmier.query.filter_by(email=email).first()
+        medecin=Medecin.query.filter_by(email=email).first()
         if patient and check_password_hash(patient.mdp, password):
             login_user(patient)  # Log in the user
             user=get_user_type(current_user.get_id())
             notifications_content = Notificationpatient.query.filter_by(idp=current_user.get_id()).all()
             notifcountpatient=len(notifications_content)
-            return render_template('dashbordpatient.html',user=user,userr=current_user.get_id(),notificationpatient=notificationpatient,notifcountpatient=notifcountpatient)
+            # return render_template('dashbordpatient.html',user=user,userr=current_user.get_id(),notificationpatient=notificationpatient,notifcountpatient=notifcountpatient)
         if infermier and check_password_hash(infermier.mdp, password):
             login_user(infermier)  # Log in the user
             user=get_user_type(current_user.get_id())
             notifications_content = Notificationinfermier.query.filter_by(idf=current_user.get_id()).all()
             notifcountinfermier=len(notifications_content)
-            return render_template('dashbordinfermier.html',user=user,notificationinfermier=notificationinfermier,notifcountinfermier=notifcountinfermier)
-        
+            # return render_template('dashbordinfermier.html',user=user,notificationinfermier=notificationinfermier,notifcountinfermier=notifcountinfermier)
+        if medecin and check_password_hash(medecin.mdp, password):
+            login_user(medecin)  # Log in the user
+            user=get_user_type(current_user.get_id())
+            print(medecin)
+            # notifications_content = Notificationinfermier.query.filter_by(idf=current_user.get_id()).all()
+            # notifcountinfermier=len(notifications_content)
+            # return render_template('dashbordmedecin.html',user=user)
+        return redirect(url_for('dashboard'))    
 
     return render_template('login.html')
 @app.route('/register_infermier', methods=['GET', 'POST'])
 def register_infermier():
     global starti,endi
-    nombre = random.randint(starti, endi)  # Génère un nombre aléatoire entre 1 et 100
-    if nombre % 2 != 0:  # Vérifie si le nombre est impair
-        nombre += 1  # Ajoute 1 pour le rendre pair
-    starti+=5
-    endi+=5
+    nombre = random.randint(0, 100)  # Génère un nombre aléatoire entre 1 et 100
+    # if nombre % 2 != 0:  # Vérifie si le nombre est impair
+    #     nombre += 1  # Ajoute 1 pour le rendre pair
+    # starti+=5
+    # endi+=5
     if request.method == 'POST':
         nom=request.form['nom']
         prenom=request.form['prenom']
+        spesialiter=request.form['specialiter']
         email = request.form['email']
         phone_number = request.form['phone_number']
         
         password = generate_password_hash(request.form['password'], method='pbkdf2:sha256')
         
 
-        new_infermier = Infirmier(idi=nombre,nom=nom,prenom=prenom,phone_number=phone_number,email=email, mdp=password)
+        new_infermier = Infirmier(idi=nombre,nom=nom,prenom=prenom,spesialiter=spesialiter,phone_number=phone_number,email=email, mdp=password)
         print(InfermierDao.register_infermier(new_infermier))
         
 
@@ -133,14 +147,40 @@ def register_infermier():
 
     return render_template('register_infermier.html')
                     
+@app.route('/register_Medecin', methods=['GET', 'POST'])
+def register_Medecin():
+    global startp,endp
+    nombre = random.randint(201, 300)  # Génère un nombre aléatoire entre 1 et 100
+    # if nombre % 2 == 0:  # Vérifie si le nombre est impair
+    #     nombre += 1  # Ajoute 1 pour le rendre pair
+    # startp+=5
+    # endp+=5
+    if request.method == 'POST':
+        nom=request.form['nom']
+        prenom=request.form['prenom']
+        email = request.form['email']
+        adresse=request.form['adresse']
+        phone=request.form['phone_number']
+        password = generate_password_hash(request.form['password'], method='pbkdf2:sha256')
+        
+
+        new_medecin = Medecin(idm=nombre,nom=nom,prenom=prenom,email=email,adresse=adresse, mdp=password,phone=phone)
+        print(MedecinDao.register_Medecin(new_medecin))
+        
+
+        return redirect(url_for('login'))
+
+    return render_template('registermedecin.html')
+
+
 @app.route('/register_patient', methods=['GET', 'POST'])
 def register_patient():
     global startp,endp
-    nombre = random.randint(startp, endp)  # Génère un nombre aléatoire entre 1 et 100
-    if nombre % 2 == 0:  # Vérifie si le nombre est impair
-        nombre += 1  # Ajoute 1 pour le rendre pair
-    startp+=5
-    endp+=5
+    nombre = random.randint(101, 200)  # Génère un nombre aléatoire entre 1 et 100
+    # if nombre % 2 == 0:  # Vérifie si le nombre est impair
+    #     nombre += 1  # Ajoute 1 pour le rendre pair
+    # startp+=5
+    # endp+=5
     if request.method == 'POST':
         nom=request.form['nom']
         prenom=request.form['prenom']
@@ -214,7 +254,12 @@ def dashboard():
 
     # Render the template with the chart data
             return render_template('dashbordinfermier.html',user=user,notificationinfermier=notificationinfermier,notifcountinfermier=notifcountinfermier,chart_json=dossier_chart_json,money_chart_json=money_chart_json)
-
+    elif get_user_type(current_user.get_id())=='medecin':
+            user=get_user_type(current_user.get_id())
+            notifications_content = Notificationmedecin.query.filter_by(idm=current_user.get_id()).all()
+            notifcountmedecin=len(notifications_content)
+            demandes = Demande.query.all()
+            return render_template('dashbordmedecin.html',user=user,userr=current_user.get_id(),demandes=demandes,notificationmedecin=notificationmedecin,notifcountmedecin=notifcountmedecin)
 
 @app.route('/profile',methods=['GET','POST'])
 @login_required
@@ -226,12 +271,19 @@ def profile():
         notifications_content = Notificationpatient.query.filter_by(idp=current_user.get_id()).all()
         notifcountpatient=len(notifications_content)
         return render_template('profilepatient.html', userr=userr,user=user,notificationpatient=notificationpatient,notifcountpatient=notifcountpatient)
-    elif Infirmier.query.filter_by(idi=current_user.get_id()).first() is not None:
+    if Infirmier.query.filter_by(idi=current_user.get_id()).first() is not None:
         userr=Infirmier.query.filter_by(idi=current_user.get_id()).first()
         notifications_content = Notificationinfermier.query.filter_by(idf=current_user.get_id()).all()
         notifcountinfermier=len(notifications_content)
         user=get_user_type(current_user.get_id())
         return render_template('profileinfermier.html', userr=userr,user=user,notificationinfermier=notificationinfermier,notifcountinfermier=notifcountinfermier)
+    if Medecin.query.filter_by(idm=current_user.get_id()).first() is not None:
+        userr=Medecin.query.filter_by(idm=current_user.get_id()).first()
+        notifications_content = Notificationmedecin.query.filter_by(idm=current_user.get_id()).all()
+        notifcountmedecin=len(notifications_content)
+    
+        user=get_user_type(current_user.get_id())
+        return render_template('profilemedecin.html', userr=userr,user=user,notificationmedecin=notificationmedecin,notifcountmedecin=notifcountmedecin)
 
     
     
@@ -242,13 +294,15 @@ def get_user_type(user_id):
         return 'patient'
     elif Infirmier.query.filter_by(idi=user_id).first() is not None :
         return 'infirmier'
+    elif Medecin.query.filter_by(idm=user_id).first() is not None :
+        return 'medecin'
     else:
         return None
     
 @app.route('/dossier')
 @login_required
 def dossier():
-    global notifcountpatient,notifcountinfermier
+    global notifcountpatient,notifcountinfermier,notifcountmedecin
     user=get_user_type(current_user.get_id())
     print(current_user.get_id())
     if Patient.query.filter_by(idp=current_user.get_id()).first() is not None:
@@ -259,9 +313,13 @@ def dossier():
         dossiers = Dossier.query.join(Patient, Dossier.idp == Patient.idp).join(Infirmier, Dossier.idf == Infirmier.idi).join(Soin, Dossier.ids == Soin.ids).filter(Infirmier.idi == current_user.get_id()).all()
         notifications_content = Notificationinfermier.query.filter_by(idf=current_user.get_id()).all()
         notifcountinfermier=len(notifications_content)
+    elif Medecin.query.filter_by(idm=current_user.get_id()).first() is not None:
+        dossiers = Dossier.query.join(Patient, Dossier.idp == Patient.idp).join(Infirmier, Dossier.idf == Infirmier.idi).join(Soin, Dossier.ids == Soin.ids).filter(Medecin.idm == current_user.get_id()).all()
+        notifications_content = Notificationmedecin.query.filter_by(idm=current_user.get_id()).all()
+        notifcountmedecin=len(notifications_content)
     available_nurses = Infirmier.query.filter_by(isdipo=True).all()  
     treatments = Soin.query.all()  
-    return render_template('dossier.html', dossiers=dossiers,user=user,available_nurses=available_nurses,soin=treatments,notificationpatient=notificationpatient,notifcountpatient=notifcountpatient,notificationinfermier=notificationinfermier,notifcountinfermier=notifcountinfermier)
+    return render_template('dossier.html', dossiers=dossiers,user=user,available_nurses=available_nurses,soin=treatments,notificationpatient=notificationpatient,notifcountpatient=notifcountpatient,notificationinfermier=notificationinfermier,notifcountinfermier=notifcountinfermier,notificationmedecin=notificationmedecin,notifcountmedecin=notifcountmedecin)
 
 @app.route('/update_status/<int:dossier_id>', methods=['GET','POST'])
 @login_required
@@ -302,6 +360,14 @@ def get_notifications_patients():
         notificationpatient=notifications_data_patient
         print(notifications_data_patient)
         return jsonify(notifications_data_patient)
+@app.route('/get_notifications_medecins', methods=['GET'])
+def get_notifications_medecins():
+        global notificationmedecin
+        notifications_content = Notificationmedecin.query.filter_by(idm=current_user.get_id()).all()
+        notifications_data_medecin = [notification.to_dict() for notification in notifications_content]
+        notificationmedecin=notifications_data_medecin
+        print(notifications_data_medecin)
+        return jsonify(notifications_data_medecin)
 @app.route('/get_notifications_infermiers', methods=['GET'])
 def get_notifications_infermiers():
         global notificationpatient
@@ -340,7 +406,22 @@ def dismiss_notification_inf(notification_id):
         else:
             return jsonify({'message': 'Notification not found'}), 404
     except Exception as e:
-        return jsonify({'message': str(e)}), 500     
+        return jsonify({'message': str(e)}), 500   
+@app.route('/dismiss_notification_med/<int:notification_id>', methods=['GET','DELETE'])
+@login_required
+def dismiss_notification_med(notification_id):
+    global notifcountmedecin
+    try:
+        notification = Notificationmedecin.query.get(notification_id)
+        notifcountmedecin-=1
+        if notification:
+            db.session.delete(notification)
+            db.session.commit()
+            return jsonify({'message': 'Notification dismissed successfully', 'reload': True}), 200
+        else:
+            return jsonify({'message': 'Notification not found'}), 404
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500      
 @app.route('/payer/<int:dossier_id>', methods=['GET','POST'])
 @login_required
 def payer(dossier_id):
@@ -354,7 +435,7 @@ def payer(dossier_id):
 
     # Update the status
     dossier.status = new_status
-    dossier.infirmier.isdipo= False
+    
     # Commit the changes to the database
     db.session.commit()
 
@@ -397,6 +478,24 @@ def update_patient(user_id):
 
 
     return redirect(url_for('profile'))
+@app.route('/update_medecin/<int:user_id>', methods=['GET','POST'])
+@login_required
+def update_medecin(user_id):
+    nom=request.form['nom']
+    prenom=request.form['prenom']
+    adresse=request.form['adresse']
+    phone_number=request.form['phone_number']
+    medecin = Medecin.query.get(user_id)
+    medecin.nom=nom
+    medecin.prenom=prenom
+    medecin.adresse=adresse
+    medecin.phone=phone_number
+ 
+     # Commit the changes to the database
+    db.session.commit()
+
+
+    return redirect(url_for('profile'))
 @app.route('/view_details/<int:dossier_id>', methods=['GET','POST'])
 @login_required
 def view_details(dossier_id):
@@ -419,14 +518,48 @@ def view_details(dossier_id):
 @login_required
 def update_dossier(dossier_id):
     # Get the new status from the request form data
-    infirmier_id = request.form['infirmier_id']
+    prevuis_infirmier_id = request.form['preveuis_inf']
+    
+    new_infirmier_id = request.form.get('infirmier_id', '')
+       
     soin_id = request.form['soin_id']
-    commentaire_patient = request.form['commentaire_patient']
+    
+    notes_de_medcin = request.form['notes_de_medcin']
+    
     dossier = Dossier.query.get(dossier_id)
+    print(prevuis_infirmier_id,new_infirmier_id)
+    if prevuis_infirmier_id != new_infirmier_id and new_infirmier_id:
+        infirmier=Infirmier.query.get(prevuis_infirmier_id)
+        infirmier.isdipo=True
+        new_notif = Notificationinfermier(idf=prevuis_infirmier_id, content="le medecin a choisi un autre infermier")
+
+        # Add the new dossier to the database session
+        db.session.add(new_notif)
+        dossier.idf = new_infirmier_id
+        infirmier=Infirmier.query.get(new_infirmier_id)
+        infirmier.isdipo=False
+        new_notif = Notificationinfermier(idf=new_infirmier_id, content="le medecin vous a affecter a un patient veillerz consulter le dossier")
+
+        # Add the new dossier to the database session
+        db.session.add(new_notif)
+
+
+    if not new_infirmier_id:  
+        dossier.idf = prevuis_infirmier_id
+
+        
+    if request.files['examin_file']:
+       examin = request.files['examin_file']
+        # Read the binary data from the file
+       examin_data = examin.read()  
+       dossier.examin=examin_data 
+    
     # Update the dossier information
-    dossier.idf = infirmier_id
+    
     dossier.ids = soin_id
-    dossier.commentaire_patient =commentaire_patient
+    dossier.notes_de_medcin =notes_de_medcin
+   
+    
      # Commit the changes to the database
     db.session.commit()
 
@@ -450,7 +583,32 @@ def add_atc(user_id):
         db.session.commit()
         # You can redirect to another page or render a template as per your requirement
         return redirect(url_for('dashboard'))
-    
+
+@app.route('/submit_demande', methods=['POST'])
+def submit_demande():
+    if request.method == 'POST':
+        # Retrieve the selected ATC values from the form
+        ids = request.form['soin_id']
+        patient_id = current_user.get_id()
+        content = request.form['content']
+        status = "non traiter"
+        # Now you have the selected ATC values, you can process them further
+        # For example, you can store them in your database or perform any other action
+        new_demande = Demande(patient_id=patient_id,ids=ids, status=status, content=content)
+        # Here, we are just printing the selected values for demonstration purposes
+        # Assign the selected ATC values to the atc column
+        db.session.add(new_demande)
+        medecin=Medecin.query.first()
+        new_notif = Notificationmedecin(idm=medecin.idm, content="le patient a fait une demande")
+
+       # Add the new dossier to the database session
+        db.session.add(new_notif)
+        # Add the new patient to the database session
+        # Commit the session to save changes to the database
+        db.session.commit()
+        # You can redirect to another page or render a template as per your requirement
+        return redirect(url_for('dashboard'))    
+   
 @app.route('/update_infermier/<int:user_id>', methods=['POST'])
 @login_required
 def update_infermier(user_id):
@@ -475,14 +633,31 @@ def delete_dossier(dossier_id):
     dossier = Dossier.query.get(dossier_id)
     if not dossier:
         flash('Dossier not found', 'error')
-        return redirect(url_for('dossier'))
+        return redirect(url_for('dashboard'))  
 
     # Delete the dossier from the database
+    # infirmier = Infirmier.query.get(dossier.idf)
+    dossier.infirmier.isdipo=True
     db.session.delete(dossier)
     db.session.commit()
 
     flash('Dossier deleted successfully', 'success')
     return redirect(url_for('dossier'))
+@app.route('/delete_demande/<int:demande_id>', methods=['GET','POST'])
+@login_required
+def delete_demande(demande_id):
+    # Find the dossier by ID
+    demande = Demande.query.get(demande_id)
+    if not demande:
+        flash('Dossier not found', 'error')
+        return redirect(url_for('dashboard'))  
+
+    # Delete the dossier from the database
+    db.session.delete(demande)
+    db.session.commit()
+
+    flash('demande deleted successfully', 'success')
+    return redirect(url_for('dashboard'))  
 @app.route('/get_available_nurses')
 def get_available_nurses():
     available_nurses = Infirmier.query.filter_by(isdipo=True).all()
@@ -493,30 +668,48 @@ def get_available_treatments():
     treatments = Soin.query.all()
     treatment_info = [{'id': treatment.ids, 'nom_s': treatment.nom_s} for treatment in treatments]
     return jsonify({'treatments': treatment_info})
-@app.route('/add_dossier', methods=['POST'])
-def add_dossier():
+@app.route('/add_dossier/<int:patient_id>/<int:demande_id>', methods=['POST'])
+def add_dossier(patient_id,demande_id):
     global notifcountinfermier
     # Get form data
-    infirmier_id = request.form['infirmier_id']
-    soin_id = request.form['soin_id']
-    commentaire_patient = request.form['commentaire_patient']
-
+    atc_values = request.form.getlist('atc')
+    idf = request.form['infirmier_id']
+    ids = request.form['soin_id']
+    idm = current_user.get_id()
+    idp = patient_id
+    notes_de_medcin = request.form['notes_de_medcin']
+    examin = request.files['examin']
+        # Read the binary data from the file
+    examin_data = examin.read()
+    
+    patient = Patient.query.get(idp)
+    patient.atc=atc_values
+    infermier=Infirmier.query.get(idf)
+    infermier.isdipo=False
+    demande=Demande.query.get(demande_id)
+    demande.status="demande traiter"
+    demande.medecin_id=idm
     # Create a new dossier instance
-    new_dossier = Dossier(idp=current_user.idp, idf=infirmier_id, ids=soin_id, status="fait_par_patient", commentaire_patient=commentaire_patient)
-
+    new_dossier = Dossier(idp=idp, idf=idf, ids=ids,idm=idm, status="traiter_par_medcin", notes_de_medcin=notes_de_medcin,examin=examin_data)
+    
     # Add the new dossier to the database session
     db.session.add(new_dossier)
+     # Create a new dossier instance
+    new_notif = Notificationpatient(idp=idp, content="le medecin a traiter  votre demande veilliez consulter cotre dossier")
+
+    # Add the new dossier to the database session
+    db.session.add(new_notif)
    # Create a new dossier instance
-    new_notif = Notificationinfermier(idf=new_dossier.idf, content="lepatient  "+current_user.nom+"a  fait un doosier")
+    new_notif = Notificationinfermier(idf=new_dossier.idf, content="le medecin vous a affecter a un patient veillerz consulter le dossier")
 
     # Add the new dossier to the database session
     db.session.add(new_notif)
     
     # Commit the changes to the database
     db.session.commit()
-
+    print(new_dossier.examin)
     # Return a JSON response indicating success
-    return redirect(url_for('dossier'))
+    return redirect(url_for('dashboard'))   
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

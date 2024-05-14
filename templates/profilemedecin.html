@@ -8,12 +8,16 @@
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
         <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" /> 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
+       
         <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-		
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
     </head>
   
    
@@ -37,7 +41,7 @@
                             <div class="profile-head">
                                 <h5>{{ userr.nom }} {{ userr.prenom }}</h5>
                                         <h6>
-                                                Infirmier
+                                                Medecin
                                         </h6>
                                         
                                 <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -50,21 +54,21 @@
                         </div>
                         <div class="col-md-2">
                             
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{userr.idi}}">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateuser{{userr.idm}}">
                                 Edit Profile
                               </button>
                         </div>
                         <!-- Button trigger modal -->
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal{{userr.idi}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="updateuser{{userr.idm}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Profile</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="{{url_for('update_infermier', user_id=userr.idi)}}">
+            <form method="POST" action="{{ url_for('update_medecin',user_id=userr.idm) }}">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="commentairePatientInput" class="form-label">nom</label>
@@ -75,13 +79,14 @@
                         <input type="text" class="form-control" name="prenom" value="{{ userr.prenom }}" >
                     </div>
                     <div class="mb-3">
-                        <label for="commentairePatientInput" class="form-label">specialiter</label>
-                        <input type="text" class="form-control" name="specialiter" value="{{ userr.spesialiter }}" >
+                        <label for="commentairePatientInput" class="form-label">adresse</label>
+                        <input type="text" class="form-control" name="adresse" value="{{ userr.adresse}}" >
                     </div>
                     <div class="mb-3">
                         <label for="commentairePatientInput" class="form-label">phone_number</label>
-                        <input type="text" class="form-control" name="phone_number" value="{{ userr.phone_number }}" >
+                        <input type="text" class="form-control" name="phone_number" value="{{userr.phone }}" >
                     </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -92,6 +97,7 @@
         </div>
     </div>
 </div>
+
                     </div>
                     <div class="row">
                         
@@ -109,14 +115,6 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <label>specialiter</label>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <p>{{ userr.spesialiter}}</p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
                                                     <label>Email</label>
                                                 </div>
                                                 <div class="col-md-6">
@@ -125,28 +123,27 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <label>phone_number</label>
+                                                    <label>adresse</label>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <p>{{ userr.phone_number }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <label>disponibilite</label>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <p>{{ userr.isdipo }}</p>
+                                                    <p>{{ userr.adresse }}</p>
                                                 </div>
                                             </div>
                                             
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label>phone_number</label>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p>{{ userr.phone }}</p>
+                                                </div>
                                             </div>
                                 </div>
                                 
                             </div>
                         </div>
                     </div>
-                         
+                          
             </div>
         </div>
     </div>

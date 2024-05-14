@@ -25,19 +25,19 @@
             <div class="col-md-9 register-right">
                 <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="{{ url_for('register_patient') }}"role="tab" aria-controls="patient" aria-selected="true">Patient</a>
+                        <a class="nav-link " id="home-tab" data-toggle="tab" href="{{ url_for('register_patient') }}"role="tab" aria-controls="patient" aria-selected="true">Patient</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="profile-tab" data-toggle="tab" href="{{ url_for('register_infermier') }}" role="tab" aria-controls="infermier" aria-selected="false">Infermier</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="{{ url_for('register_Medecin') }}" role="tab" aria-controls="Medecin" aria-selected="false">Medecin</a>
+                        <a class="nav-link active" id="profile-tab" data-toggle="tab" href="{{ url_for('register_Medecin') }}" role="tab" aria-controls="Medecin" aria-selected="false">Medecin</a>
                     </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                        <h3 class="register-heading">Register as a Patient</h3>
-                        <form id="register_patient" action="/register_patient" method="post" enctype="multipart/form-data" >
+                        <h3 class="register-heading">Register as a Medecin</h3>
+                        <form id="register_Medecin" action="/register_Medecin" method="post" enctype="multipart/form-data" >
 
                         <div class="row register-form">
                             <div class="col-md-6">

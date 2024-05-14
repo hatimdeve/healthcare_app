@@ -28,7 +28,10 @@
                         <a class="nav-link " id="home-tab" data-toggle="tab" href="{{ url_for('register_patient') }}" role="tab" aria-controls="patient" aria-selected="flase">Patient</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" id="profile-tab" data-toggle="tab" href="{{ url_for('register_infermier') }}"role="tab" aria-controls="infermier" aria-selected="true">infermier</a>
+                        <a class="nav-link active" id="profile-tab" data-toggle="tab" href="{{ url_for('register_infermier') }}"role="tab" aria-controls="infermier" aria-selected="true">Infermier</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="{{ url_for('register_Medecin') }}" role="tab" aria-controls="Medecin" aria-selected="false">Medecin</a>
                     </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
@@ -52,9 +55,11 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Your speciality" name="specialiter" value="" />
+                                </div>
+                                <div class="form-group">
                                     <input type="email" class="form-control" placeholder="Your Email *" name="email" value="" />
                                 </div>
-                                
                                 <div class="form-group">
                                     <input type="password" class="form-control" placeholder="Password *" name="password" value="" />
                                 </div>
